@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nm.mapper.SysRegionalBelongMapper" >
+  <resultMap id="BaseResultMap" type="com.nm.model.SysRegionalBelong" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <result column="ID" property="id" jdbcType="VARCHAR" />
+    <result column="PROV_NO" property="provNo" jdbcType="VARCHAR" />
+    <result column="PROV_NAME" property="provName" jdbcType="VARCHAR" />
+    <result column="CITY_NO" property="cityNo" jdbcType="VARCHAR" />
+    <result column="CITY_NAME" property="cityName" jdbcType="VARCHAR" />
+    <result column="AREA_NO" property="areaNo" jdbcType="VARCHAR" />
+    <result column="AREA_NAME" property="areaName" jdbcType="VARCHAR" />
+  </resultMap>
+</mapper>

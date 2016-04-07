@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:websocket="http://www.springframework.org/schema/websocket"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-4.1.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+      http://www.springframework.org/schema/aop 
+      http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+      http://www.springframework.org/schema/tx 
+      http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd
+        http://www.springframework.org/schema/task
+      http://www.springframework.org/schema/task/spring-task-4.1.xsd">
+	<context:component-scan base-package="com.nm">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+    <bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath*:jdbc.properties</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClass}"/>
+		<property name="url" value="${jdbc.url}"/>
+		<property name="username" value="${jdbc.user}"/>
+		<property name="password" value="${jdbc.password}"/>
+
+		<property name="filters" value="stat"/>
+
+		<property name="maxActive" value="20"/>
+		<property name="initialSize" value="1"/>
+		<property name="maxWait" value="60000"/>
+		<property name="minIdle" value="1"/>
+
+		<property name="timeBetweenEvictionRunsMillis" value="60000"/>
+		<property name="minEvictableIdleTimeMillis" value="300000"/>
+
+		<property name="validationQuery" value="SELECT 'x'"/>
+		<property name="testWhileIdle" value="true"/>
+		<property name="testOnBorrow" value="false"/>
+		<property name="testOnReturn" value="false"/>
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="mapperLocations">
+			<array>
+				<value>classpath:mapper/*.xml</value>
+			</array>
+		</property>
+		<property name="typeAliasesPackage" value="com.isea533.mybatis.model"/>
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageHelper">
+					<!-- 这里的几个配置主要演示如何使用，如果不理解，一定要去掉下面的配置 -->
+					<property name="properties">
+						<value>
+							dialect=mysql
+							reasonable=true
+							supportMethodsArguments=true
+							params=count=countSql
+							autoRuntimeDialect=true
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+
+	<bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.nm.mapper"/>
+		<!-- 3.2.2版本新特性，markerInterface可以起到mappers配置的作用，详细情况需要看Marker接口类 -->
+		<property name="markerInterface" value="com.nm.utils.MyMapper"/>
+		<!-- 通用Mapper通过属性注入进行配置，默认不配置时会注册Mapper<T>接口 -->
+		<!--<property name="properties">
+            <value>
+                mappers=tk.mybatis.mapper.common.Mapper,tk.mybatis.mapper.common.special.InsertUseGeneratedKeysMapper
+            </value>
+        </property>-->
+
+	</bean>
+
+	<!-- 事物的配置 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+	<task:annotation-driven/>
+
+</beans>

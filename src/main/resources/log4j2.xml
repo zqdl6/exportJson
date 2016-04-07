@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error">
+ <Properties>
+        <property name="log_pattern">%d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n</property>
+        <property name="file_name">logs/app.log</property>
+        <property name="rolling_file_name">logs/app-%d{yyyy-MM-dd}-%i.log.gz</property>
+        <property name="every_file_size">10M</property><!-- 日志切割的最小单位 -->
+        <property name="output_log_level">debug</property><!-- 日志输出级别 -->
+    </Properties>
+  <Appenders>
+    <!-- 控制台输出日志 -->
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout charset="GBK" pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+    <!-- 日志文件 -->
+    <RollingFile name="RollingFile" fileName="/home/logs/exportJson/exportJson.log"
+                     filePattern="/home/logs/exportJson/$${date:yyyy-MM}/log-%d{yyyy-MM-dd }-%i.log.gz">
+            <PatternLayout charset="GBK" pattern="%d{yyyy-MM-dd HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n"/>
+            <SizeBasedTriggeringPolicy size="500KB"/>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+      <logger name="log4jdbc.log4j2" level="info" additivity="false">
+          <MarkerFilter marker="LOG4JDBC_NON_STATEMENT" onMatch="DENY" onMismatch="NEUTRAL" />
+          <appender-ref ref="Console" />
+      </logger>
+    <Logger name="com" level="trace" additivity="false">
+      <!--<AppenderRef ref="Console"/>-->
+      <!-- <AppenderRef ref="RollingFile"/> -->
+    </Logger>
+    <Root level="error">
+      <AppenderRef ref="Console"/>
+      <!-- <AppenderRef ref="RollingFile"/> -->
+    </Root>
+  </Loggers>
+</Configuration>
